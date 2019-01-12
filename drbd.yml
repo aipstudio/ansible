@@ -1,0 +1,22 @@
+- hosts: d
+  tasks:
+    - name: Installs drbd
+      apt: pkg=drbd8-utils state=installed update_cache=true
+
+    - name: Push config file
+      copy: src=files/drbd.res dest=/etc/drbd.d/
+
+    - name: create meta for drbd disk
+      shell: |
+        drbdadm create-md drbd
+        update-rc.d drbd enable 3
+        mkdir -p /drbd
+        service drbd start
+
+    - name: run primary drbd
+      shell: |
+        drbdadm -- --overwrite-data-of-peer primary drbd
+        mkfs.ext4 /dev/drbd1
+        mount /dev/drbd1 /drbd
+      run_once: true
+      delegate_to: 192.168.1.101
