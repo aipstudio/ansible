@@ -1,0 +1,35 @@
+https://oracle-base.com/articles/11g/oracle-db-11gr2-installation-on-oracle-linux-7
+
+systemctl get-default
+systemctl set-default graphical.target
+multi-user.target
+systemctl enable graphical.target --force
+
+yum groupinfo "Server with GUI"
+yum group list
+yum -y groups install "Server with GUI"
+
+iptables -I INPUT -s 10.55.0.0/22 -p tcp --dport 1521 -j ACCEPT
+
+chown -R oracle.oinstall /home/oracle/scripts
+chmod u+x /home/oracle/scripts/*.sh
+
+chmod 750 /etc/init.d/dbora
+chkconfig --add dbora
+service dbora start
+service dbora stop
+
+sqlplus SYS/SYS as SYSDBA
+alter user SYS identified by "SYS";
+
+export ORACLE_SID=p1
+emctl start dbconsole
+ORACLE_HOME_LISTNER=$ORACLE_HOME
+
+select db_unique_name,name,open_mode,log_mode,controlfile_type,database_role,switchover_status from v$database;
+select current_scn from v$database;
+select max(sequence#) from v$log_history;
+
+EMCA
+emca -deconfig dbcontrol db -repos drop
+emca -config dbcontrol db -repos create

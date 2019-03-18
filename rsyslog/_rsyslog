@@ -1,0 +1,43 @@
+
+--- server rsyslog
+/etc/rsyslog.conf
+$template RemoteLogs,"/var/log/remote/%HOSTNAME%/%PROGRAMNAME%.log"
+*.* ?RemoteLogs
+
+--client rsyslog
+*.* @10.55.1.131:514
+@ - UDP
+@@ - TCP
+
+/etc/rsyslog.d/vsftpd.conf
+$ModLoad imfile
+$InputFileName /var/log/ftp_log/vsftpd.log
+$InputFileTag vsftpd:
+$InputFileStateFile stat-vsftpd.log
+$InputFileFacility daemon
+$InputRunFileMonitor
+*.* @10.55.1.131
+
+apt install -y mysql-server mysql-client rsyslog-mysql
+GRANT ALL PRIVILEGES ON Syslog.* TO 'rsyslog'@'%' IDENTIFIED BY 'rsyslog' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+/etc/mysql/my.cfg
+[mysqld]
+bind-address = 0.0.0.0
+service mysql restart
+
+
+/etc/rsyslog.d/mysql.conf
+$ModLoad ommysql
+*.* :ommysql:localhost,Syslog,rsyslog,rsyslog
+
+apt install php apache2 php-mysql
+chown -R www-data:www-data /var/www/html/la
+
+cd /etc/apache2/sites-available
+cp 000-default.conf la.conf
+nano la.conf
+a2ensite la.conf
+service apache2 restart
+
+username la password 123456

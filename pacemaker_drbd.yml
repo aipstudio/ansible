@@ -1,0 +1,12 @@
+#https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/high_availability_add-on_administration/s1-lvmsetupsamba-haaa
+#no work LVM
+- hosts: debian_2_host
+  tasks:
+    - name: configure drbd
+      shell: |
+        pcs resource create drbd_res ocf:linbit:drbd drbd_resource=drbd meta master-max=1 master-node-max=1 clone-max=2 clone-node-max=1 notify=true --master
+        pcs resource create drbd_mnt ocf:heartbeat:Filesystem device=/dev/drbd1 directory=/drbd fstype=ext4
+        pcs constraint colocation add drbd_mnt with drbd_res-master
+        pcs constraint order promote drbd_res-master then drbd_mnt
+      run_once: true
+      delegate_to: 192.168.1.101

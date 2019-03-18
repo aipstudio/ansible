@@ -1,0 +1,24 @@
+- hosts: windows
+  tasks:
+    - name: show ipconfig
+      win_shell: |
+        ipconfig
+      register: shell_result
+
+    - debug:
+        var: shell_result.stdout_lines
+
+    - name: copy 7z
+      win_copy:
+        src: /root/7z1806-x64.exe
+        dest: c:\tmp\
+
+    - name: install 7z
+      win_package:
+        path: c:\tmp\7z1806-x64.exe
+        product_id: 7-Zip
+        arguments: /S
+        state: present
+
+#pip install pywinrm
+#https://www.7-zip.org/a/7z1806-x64.exe

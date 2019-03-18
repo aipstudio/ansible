@@ -1,0 +1,29 @@
+- hosts: debian_2_host
+  tasks:
+    - name: Installs pacemaker corosync pcs cmr
+      apt:
+        update_cache: yes
+        name: "{{ packages }}"
+      vars:
+        packages:
+          - pacemaker
+          - pcs
+          - crmsh
+    - name: create user passwors
+      user:
+        name: hacluster
+        password: "{{ '1' | password_hash('sha512') }}"
+
+    - name: create hacluster
+      shell: |
+        pcs cluster destroy
+        pcs cluster auth d1 d2 -u hacluster -p 1 --force
+        pcs cluster setup --force --name CL d1 d2 --enable --start
+        pcs property set stonith-enabled=false
+        pcs property set no-quorum-policy=ignore
+        pcs resource create VirtualIP ocf:heartbeat:IPaddr2 params ip=192.168.1.100 cidr_netmask=24 nic=eth1
+      run_once: true
+      delegate_to: 192.168.1.101
+
+    - name: Push config file for web config https://d1:2224/
+      copy: src=files/pcs_settings.conf dest=/var/lib/pcsd/

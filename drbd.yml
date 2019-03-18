@@ -1,4 +1,4 @@
-- hosts: d
+- hosts: debian_2_host
   tasks:
     - name: Installs drbd
       apt: pkg=drbd8-utils state=installed update_cache=true

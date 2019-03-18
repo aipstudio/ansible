@@ -1,3 +1,24 @@
-[d]
+[debian]
 192.168.1.101
 192.168.1.102
+
+[debian_2_host]
+192.168.1.101
+192.168.1.102
+
+[filebeat]
+10.55.1.248 ansible_user=lc ansible_password=1 ansible_become_user=root ansible_become_password=1
+
+[mikrotik]
+10.55.0.189 ansible_user=admin ansible_password=1111 ansible_network_os=routeros
+
+[windows]
+192.168.1.2
+
+[windows:vars]
+ansible_user=user
+ansible_password=password
+ansible_connection=winrm
+ansible_port=5985
+ansible_winrm_transport=basic
+ansible_winrm_server_cert_validation=ignore

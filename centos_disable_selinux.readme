@@ -1,0 +1,6 @@
+sudo setenforce 0
+
+/etc/selinux/config
+SELINUX=disabled
+
+shutdown -r now

@@ -1,0 +1,39 @@
+- hosts: debian_2_host
+  tasks:
+    - name: Installs keepalived
+      apt:
+        update_cache: yes
+        name: "{{ packages }}"
+      vars:
+        packages:
+          - keepalived
+          - libipset3
+
+    - name: Push config file
+      copy: src=files/keepalived.conf dest=/etc/keepalived/
+      notify:
+        - restart keepalived
+
+    - name: system config
+      shell: |
+        echo "net.ipv4.ip_forward = 1\nnet.ipv4.ip_nonlocal_bind = 1\nnet.ipv4.conf.eth1.arp_announce = 2\nnet.ipv4.conf.eth1.arp_ignore = 1" >> /etc/sysctl.conf
+        sysctl -p
+        update-rc.d keepalived defaults
+
+  handlers:
+    - name: restart keepalived
+      service:
+        name: keepalived
+        state: restarted
+
+#comments
+#iptables -A INPUT -i eth1 -p vrrp -j ACCEPT
+#iptables -A OUTPUT -o eth1 -p vrrp -j ACCEPT
+#iptables -A INPUT -d 224.0.0.0/8 -i eth1 -j ACCEPT
+#tcpdump -vvv -n -i eth1 host 224.0.0.18
+#ifconfig eth0:0 inet 192.168.100.100 netmask 255.255.255.255
+#ifconfig lo:0 inet 192.168.1.100 netmask 255.255.255.255
+#net.ipv4.ip_forward = 1
+#net.ipv4.ip_nonlocal_bind = 1
+#net.ipv4.conf.eth1.arp_announce = 2
+#net.ipv4.conf.eth1.arp_ignore = 1

@@ -1,0 +1,33 @@
+- hosts: filebeat
+  become: yes
+  become_method: su
+  tasks:
+
+    - name: Push deb and config file
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+      with_items:
+        - { src: 'rsyslog/filebeat.yml' , dest: '/tmp/'}
+        - { src: 'rsyslog//filebeat-6.5.4-amd64.deb' , dest: '/tmp/'}
+
+    - name: install filebeat and copy config
+      shell: |
+        dpkg -i /tmp/filebeat-6.5.4-amd64.deb
+        mv /etc/filebeat/filebeat.yml /etc/filebeat/filebeat.yml.old
+        cp /tmp/filebeat.yml /etc/filebeat/
+        rm /tmp/filebeat.yml
+        rm /tmp/filebeat-6.5.4-amd64.deb
+      notify:
+        - restart filebeat
+
+    - name: update init service
+      shell: |
+        update-rc.d filebeat defaults
+        update-rc.d filebeat enable 3
+
+  handlers:
+    - name: restart filebeat
+      service:
+        name: filebeat
+        state: restarted

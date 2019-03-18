@@ -1,0 +1,17 @@
+- hosts: mikrotik
+  gather_facts: no
+  connection: network_cli
+  tasks:
+    - name: run command on remote devices
+      #command: bash -c "cat rsyslog/mikrotik.rsc | sshpass -p 11111 ssh -T {{inventory_hostname}} -l admin"
+      routeros_command:
+        commands:
+          #- /system logging add action=rsyslog topics=wireless
+          - /system clock set time-zone-name=Europe/Moscow
+          - :if ([:len [/system logging action find name="rsyslog"]] >= 1) do={/system logging action set rsyslog remote=10.55.1.131 remote-port=5514 target=remote} else {/system logging action add name=rsyslog remote=10.55.1.131 remote-port=5514 target=remote}
+          - /system logging remove numbers=4
+          - /system logging add action=rsyslog topics=system
+      register: res
+
+    - name: Debug registered var
+      debug: var=res.stdout_lines

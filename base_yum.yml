@@ -1,0 +1,30 @@
+---
+- hosts: centos
+  become: yes
+  become_method: su
+  tasks:
+    - name: Install EPEL
+      yum:
+        update_cache: yes
+        name: epel-release
+    - name: Install a list of packages
+      yum:
+        update_cache: yes
+        name: "{{ packages }}"
+      vars:
+        packages:
+        - htop
+        - atop
+        - net-tools
+        - mc
+        - ntpdate
+        - cifs-utils
+        - open-vm-tools
+    - name: config timezone
+      shell: |
+        rm -rf /etc/localtime
+        ln -s /usr/share/zoneinfo/Europe/Moscow /etc/localtime
+    - name: upgrade all packages
+      yum:
+        name: '*'
+        state: latest

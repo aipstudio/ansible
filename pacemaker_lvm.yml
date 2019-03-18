@@ -1,0 +1,40 @@
+#https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/high_availability_add-on_administration/s1-lvmsetupsamba-haaa
+#no work LVM
+- hosts: debian_2_host
+  tasks:
+    - name: install clvm gfs2
+      apt:
+        update_cache: yes
+        name: "{{ packages }}"
+      vars:
+        packages:
+          - clvm
+          - gfs2-utils
+
+    - name: configure clvm enable cluster
+      shell: |
+        lvmconf --enable-cluster
+
+    - name: configure clvm dlm
+      shell: |
+        pcs property set no-quorum-policy=freeze
+        pcs resource create dlm ocf:pacemaker:controld op monitor interval=30s on-fail=fence clone interleave=true ordered=true
+        pcs resource create clvmd ocf:heartbeat:clvm op monitor interval=30s on-fail=fence clone interleave=true ordered=true
+        pcs constraint order start dlm-clone then clvmd-clone
+        pcs constraint colocation add clvmd-clone with dlm-clone
+      run_once: true
+      delegate_to: 192.168.1.101
+
+    - name: configure lvm gfs2
+      shell: |
+        pvcreate /dev/sdb
+        vgcreate -Ay -cy cluster_vg /dev/sdb
+        lvcreate -l100%FREE -n cluster_lv cluster_vg
+        mkfs.gfs2 -p lock_dlm -j 2 -t CL:samba /dev/cluster_vg/cluster_lv
+        pcs resource create fs ocf:heartbeat:Filesystem device="/dev/cluster_vg/cluster_lv" directory="/mnt/gfs2share" fstype="gfs2" --clone
+        pcs constraint order start clvmd-clone then fs-clone
+        pcs constraint colocation add fs-clone with clvmd-clone
+        mkdir /mnt/gfs2share
+        echo mount /dev/mapper/cluster_vg-cluster_lv /mnt/gfs2share
+      run_once: true
+      delegate_to: 192.168.1.101

@@ -1,0 +1,16 @@
+---
+- hosts: all
+  tasks:
+    - name: Install a list of packages
+      become: yes
+      apt:
+        update_cache: yes
+        name: "{{ packages }}"
+      vars:
+        packages:
+        - htop
+        - atop
+        - net-tools
+        - mc
+        - lnav
+        - cifs-utils

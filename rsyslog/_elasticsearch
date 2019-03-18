@@ -1,0 +1,22 @@
+apt install -y default-jre
+wget https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-6.5.4-amd64.deb
+https://github.com/logstash-plugins/logstash-patterns-core/blob/master/patterns/linux-syslog
+
+/usr/share/logstash/bin/logstash -f /etc/logstash/conf.d/logstash_syslog.conf
+
+/etc/elasticsearch/elasticsearch.yml
+network.host: 0.0.0.0
+http.port: 9200
+
+/etc/kibana/kibana.yml
+server.host: "0.0.0.0"
+elasticsearch.url: "http://localhost:9200"
+
+update-rc.d kibana defaults && update-rc.d elasticsearch defaults
+update-rc.d kibana enable 3 && update-rc.d elasticsearch enable 3
+service kibana restart && service elasticsearch restart
+
+http://localhost:9200 - elasticsearch
+http://localhost:5601 - kubana
+http://localhost:5044 - logstash
+http://localhost:8200 - apm server
