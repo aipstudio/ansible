@@ -34,7 +34,12 @@ CREATE USER postgres WITH password '1';
 CREATE USER pr WITH password '1';
 ALTER USER pr WITH SUPERUSER;
 GRANT ALL ON DATABASE postgres TO pr;
+grant all privileges on database production to pr;
 CREATE ROLE replication WITH REPLICATION PASSWORD '1' LOGIN;
+
+drop user pr;
+drop role pr;
+REVOKE ALL ON DATABASE postgres from pr;
 
 host replication replication  192.168.56.10/32  trust
 wal_level = hot_standby
@@ -42,11 +47,21 @@ max_wal_senders = 5
 wal_keep_segments = 32
 hot_standby = on
 
+------RESTORE to SLAVE
 slave stop
 chown postgres:postgres /var/lib/postgresql/9.5/main/recovery.conf
 SELECT pg_start_backup('label', true);
-rsync -a /var/lib/postgresql/9.5/main/ root@10.55.1.71:/var/lib/postgresql/9.5/main/ --exclude postmaster.pid
+rsync -a /var/lib/postgresql/9.5/main/ root@192.168.25.141:/var/lib/postgresql/9.5/main/ --exclude postmaster.pid
+rsync -a /data/base/ root@192.168.25.141:/data/base
 SELECT pg_stop_backup();
+
+------RESET WAL ARCHIVE LOG
+cat /var/log/postgresql/postgresql_9.5.log
+service postgresql stop
+/usr/lib/postgresql/9.5/bin/pg_controldata /var/lib/postgresql/9.5/main/
+su postgres
+/usr/lib/postgresql/9.5/bin/pg_resetxlog -o 1218395 -x 263558 -f /var/lib/postgresql/9.5/main/
+service postgresql start
 
 SELECT * FROM pg_stat_replication;
 SELECT now() - pg_last_xact_replay_timestamp();
