@@ -51,9 +51,10 @@ hot_standby = on
 slave stop
 chown postgres:postgres /var/lib/postgresql/9.5/main/recovery.conf
 SELECT pg_start_backup('label', true);
-rsync -a /var/lib/postgresql/9.5/main/ root@192.168.25.141:/var/lib/postgresql/9.5/main/ --exclude postmaster.pid
-rsync -a /data/base/ root@192.168.25.141:/data/base
+rsync -avuKL /var/lib/postgresql/9.5/main/ root@192.168.25.141:/var/lib/postgresql/9.5/main/ --exclude postmaster.pid
+rsync -avuKL /data/base/ root@192.168.25.141:/data/base
 SELECT pg_stop_backup();
+slave start
 
 ------RESET WAL ARCHIVE LOG
 cat /var/log/postgresql/postgresql_9.5.log
