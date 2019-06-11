@@ -1,0 +1,7 @@
+sudo gedit /etc/ld.so.conf.d/pg.conf
+/usr/lib/postgresql/9.5/lib
+
+ldconfig
+
+LD_LIBRARY_PATH=/usr/lib/postgresql/9.5/lib
+export LD_LIBRARY_PATH
