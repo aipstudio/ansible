@@ -11,15 +11,20 @@ cd /home/ca/easy-rsa-master/easyrsa3
 
 ./easyrsa init-pki
 ./easyrsa gen-dh
+./easyrsa build-ca
 ./easyrsa gen-req openvpn-server nopass
 ./easyrsa sign-req server openvpn-server
+./easyrsa gen-crl
+openvpn --genkey --secret ta.key
 copy ca.crt dh.pem openvpn-server.crt openvpn-server.key ta.key     /etc/openvpn/server
 
 ./easyrsa gen-req client1 nopass
 ./easyrsa sign-req client client1
-copy ca.crt dh.pem client1.crt client1.key ta.key     /etc/openvpn/server
+copy ca.crt dh.pem client1.crt client1.key ta.key     /etc/openvpn/client
 
-./easyrsa gen-crl
+ip address static
+mkdir /ver/log/openvpn
 
+service openvpn start
 systemctl start openvpn-server@server
 journalctl -xe

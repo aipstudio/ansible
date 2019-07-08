@@ -8,7 +8,7 @@ sudo apt install postgresql-9.5
 psql -U postgres
 sudo -u postgres psql
 
-DROP DATABASE production
+DROP DATABASE production;
 
 CREATE DATABASE production
  WITH OWNER = postgres
