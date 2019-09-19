@@ -1,0 +1,6 @@
+apt -y install python-pip
+pip install elastalert
+
+https://elastalert.readthedocs.io/en/latest/running_elastalert.html
+elastalert-test-rule --config config.yaml example_rules/1_alert_email.yaml
+python3 -m elastalert.elastalert --config config.yaml --verbose --rule example_rules/1_alert_email.yaml

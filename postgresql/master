@@ -1,0 +1,63 @@
+fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=4G --readwrite=randrw --rwmixread=75
+fiotest: (g=0): rw=randrw, bs=4K-4K/4K-4K/4K-4K, ioengine=libaio, iodepth=64
+fio-2.1.11
+Starting 1 process
+Jobs: 1 (f=1): [m(1)] [100.0% done] [86664KB/28932KB/0KB /s] [21.7K/7233/0 iops] [eta 00m:00s]
+fiotest: (groupid=0, jobs=1): err= 0: pid=21055: Mon Sep  9 21:36:43 2019
+  read : io=3071.7MB, bw=115827KB/s, iops=28956, runt= 27156msec
+  write: io=1024.4MB, bw=38626KB/s, iops=9656, runt= 27156msec
+  cpu          : usr=4.96%, sys=24.67%, ctx=374889, majf=0, minf=6
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=0.1%, >=64=100.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.1%, >=64=0.0%
+     issued    : total=r=786347/w=262229/d=0, short=r=0/w=0/d=0
+     latency   : target=0, window=0, percentile=100.00%, depth=64
+
+Run status group 0 (all jobs):
+   READ: io=3071.7MB, aggrb=115826KB/s, minb=115826KB/s, maxb=115826KB/s, mint=27156msec, maxt=27156msec
+  WRITE: io=1024.4MB, aggrb=38625KB/s, minb=38625KB/s, maxb=38625KB/s, mint=27156msec, maxt=27156msec
+
+Disk stats (read/write):
+  sdc: ios=779849/260427, merge=2814/444, ticks=1357088/446480, in_queue=1803740, util=99.74%
+
+-------------------------------------------------------------------------------
+fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=4G --readwrite=randread
+fiotest: (g=0): rw=randread, bs=4K-4K/4K-4K/4K-4K, ioengine=libaio, iodepth=64
+fio-2.1.11
+Starting 1 process
+Jobs: 1 (f=1): [r(1)] [100.0% done] [214.3MB/0KB/0KB /s] [54.9K/0/0 iops] [eta 00m:00s]
+fiotest: (groupid=0, jobs=1): err= 0: pid=20314: Mon Sep  9 21:34:21 2019
+  read : io=4096.0MB, bw=195275KB/s, iops=48818, runt= 21479msec
+  cpu          : usr=5.79%, sys=31.38%, ctx=412205, majf=0, minf=71
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=0.1%, >=64=100.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.1%, >=64=0.0%
+     issued    : total=r=1048576/w=0/d=0, short=r=0/w=0/d=0
+     latency   : target=0, window=0, percentile=100.00%, depth=64
+
+Run status group 0 (all jobs):
+   READ: io=4096.0MB, aggrb=195274KB/s, minb=195274KB/s, maxb=195274KB/s, mint=21479msec, maxt=21479msec
+
+Disk stats (read/write):
+  sdc: ios=1042759/163, merge=4029/91, ticks=1372312/62412, in_queue=1434708, util=99.67%
+
+-------------------------------------------------------------------------------
+fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=4G --readwrite=randwrite
+fiotest: (g=0): rw=randwrite, bs=4K-4K/4K-4K/4K-4K, ioengine=libaio, iodepth=64
+fio-2.1.11
+Starting 1 process
+Jobs: 1 (f=1): [w(1)] [96.8% done] [0KB/206.6MB/0KB /s] [0/52.9K/0 iops] [eta 00m:01s]
+fiotest: (groupid=0, jobs=1): err= 0: pid=20567: Mon Sep  9 21:35:24 2019
+  write: io=4096.0MB, bw=142156KB/s, iops=35538, runt= 29505msec
+  cpu          : usr=5.03%, sys=29.46%, ctx=194111, majf=0, minf=7
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=0.1%, >=64=100.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.1%, >=64=0.0%
+     issued    : total=r=0/w=1048576/d=0, short=r=0/w=0/d=0
+     latency   : target=0, window=0, percentile=100.00%, depth=64
+
+Run status group 0 (all jobs):
+  WRITE: io=4096.0MB, aggrb=142155KB/s, minb=142155KB/s, maxb=142155KB/s, mint=29505msec, maxt=29505msec
+
+Disk stats (read/write):
+  sdc: ios=1167/1041770, merge=43/1038, ticks=30000/1879888, in_queue=1909440, util=99.77%

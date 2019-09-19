@@ -1,0 +1,20 @@
+name: Example frequency rule
+type: frequency
+index: logstash*
+num_events: 2
+timeframe:
+#  hours: 1
+  minutes: 2
+filter:
+- query:
+    query_string:
+      query: "230 Login successful."
+alert:
+- "email"
+email:
+- "aipstudio@mail.ru"
+smtp_host: "smtp.mail.ru"
+smtp_post: 465
+smtp_ssl: true
+smtp_auth_file: "/opt/elastalert/cred"
+from_addr: "aipstudio@mail.ru"

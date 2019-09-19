@@ -16,7 +16,7 @@ $InputFileTag vsftpd:
 $InputFileStateFile stat-vsftpd.log
 $InputFileFacility daemon
 $InputRunFileMonitor
-*.* @10.55.1.131
+*.* @elasticsearch:5514
 
 apt install -y mysql-server mysql-client rsyslog-mysql
 GRANT ALL PRIVILEGES ON Syslog.* TO 'rsyslog'@'%' IDENTIFIED BY 'rsyslog' WITH GRANT OPTION;

@@ -8,6 +8,11 @@ sudo apt install postgresql-9.5
 psql -U postgres
 sudo -u postgres psql
 
+locale-gen ru_RU.UTF-8
+dpkg-reconfigure locales
+pg_dropcluster --stop 9.5 main
+pg_createcluster --locale ru_RU.UTF-8 --start 9.5 main
+
 DROP DATABASE production;
 
 CREATE DATABASE production
@@ -18,7 +23,7 @@ CREATE DATABASE production
        LC_CTYPE = 'ru_RU.UTF-8'
       CONNECTION LIMIT = -1;
 
-pg_restore --dbname=production --verbose --disable-triggers --jobs=4 1.dmp
+pg_restore -U postgres --dbname=production --verbose --disable-triggers --jobs=8 1.dmp
 psql -U postgres -d production -c "SELECT query from public.fn_get_ddl_roles_sync('192.168.25.140', 6432, 'production', 'postgres', '1');" > /tmp/roles.sql
 psql -U postgres -d production -f /tmp/roles.sql
 
