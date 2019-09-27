@@ -16,7 +16,7 @@
 
     - name: system config
       shell: |
-        echo "net.ipv4.ip_forward = 1\nnet.ipv4.ip_nonlocal_bind = 1\nnet.ipv4.conf.eth1.arp_announce = 2\nnet.ipv4.conf.eth1.arp_ignore = 1" >> /etc/sysctl.conf
+        echo "\nnet.ipv4.ip_forward = 1\nnet.ipv4.ip_nonlocal_bind = 1\nnet.ipv4.conf.eth1.arp_announce = 2\nnet.ipv4.conf.eth1.arp_ignore = 1\n" >> /etc/sysctl.conf
         sysctl -p
         update-rc.d keepalived defaults
 

@@ -1,1 +1,2 @@
 deb http://apt.kubernetes.io/ kubernetes-xenial main
+deb [arch=amd64] https://download.docker.com/linux/debian buster stable

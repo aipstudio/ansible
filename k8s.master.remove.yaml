@@ -1,0 +1,15 @@
+---
+- hosts: k8s-masters
+  become: yes
+  become_method: su
+  tasks:
+    - name: remove cluster
+      shell: |
+          kubeadm reset -f
+          rm -r /root/.kube
+          iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
+          reboot
+#        systemctl enable keepalived
+#        service keepalived restart
+#        echo "net.ipv4.ip_forward = 1\nnet.ipv4.ip_nonlocal_bind = 1\nnet.ipv4.conf.ens192.arp_announce = 2\nnet.ipv4.conf.ens192.arp_ignore = 1" >> /etc/sysctl.conf
+#        sysctl -p

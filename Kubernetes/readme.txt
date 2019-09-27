@@ -7,7 +7,7 @@ apt update
 
 apt install -y docker-ce docker-ce-cli containerd.io
 systemctl enable docker
-apt install -y kubeadm kubectl kubelet
+apt install -y kubeadm kubectl kubelet=1.15.4-00
 
 ---DOCKER API ENABLE
 /etc/systemd/system/multi-user.target.wants/docker.service
@@ -15,19 +15,34 @@ ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
 
 ---K8S INIT
 swapoff /swap.imp
-kubeadm init --pod-network-cidr=10.244.0.0/16
-//kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=10.55.0.141
-
+apt install kubelet=1.15.4-00
+kubeadm init --pod-network-cidr=10.244.0.0/16 --control-plane-endpoint=10.55.0.140 --apiserver-advertise-address=10.55.0.141 --service-cidr=10.245.0.0/16
 mkdir -p $HOME/.kube && cp -i /etc/kubernetes/admin.conf $HOME/.kube/config && chown $(id -u):$(id -g) $HOME/.kube/config
-
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
 
+kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.8.1/manifests/metallb.yaml
+kubectl apply -f metallb.yaml
+
+coredns pending --> kubectl edit cm coredns -n kube-system
+delete loop
+
+---K8S MULTIMASTER
+scp -r /etc/kubernetes/pki/ root@wex-2:/etc/kubernetes/
+
+  kubeadm join 10.55.0.140:6443 --token vu2z2d.1sylk0ct2za7ohu0 \
+    --discovery-token-ca-cert-hash sha256:6173315a83ec2a995b6cf2617ee08e0729beccbb2b484ce2d267b5bda00ae718 \
+    --control-plane
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 10.55.0.140:6443 --token vu2z2d.1sylk0ct2za7ohu0 \
+    --discovery-token-ca-cert-hash sha256:6173315a83ec2a995b6cf2617ee08e0729beccbb2b484ce2d267b5bda00ae718
+
+watch kubectl get all --all-namespaces -o wide
 kubectl get nodes --all-namespaces -o wide
 kubectl get pods --all-namespaces -o wide
 kubectl get services --all-namespaces -o wide
-
-kubeadm join 10.55.0.141:6443 --token b1l847.kvvxr9m9j8lxx5vm \
-    --discovery-token-ca-cert-hash sha256:b42172d9c90dee34752c0663e2329d627d2dc6afa081dd2c99880dd03d297405
 
 ---K8S DASHBOARD
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta4/aio/deploy/recommended.yaml
@@ -55,13 +70,18 @@ kubectl describe replicasets
 --K8S Schedule
 kubectl describe node node-master
 kubectl taint node node-master node-role.kubernetes.io/master:NoSchedule-
+kubectl taint node node-master key=value:NoSchedule
+kubectl taint node node-master key=value:NoExecute
 
+kubectl cordon my-node
+kubectl drain my-node --ignore-daemonsets
+kubectl uncordon my-node
 
 ---K8S DASHBOARD REMOVE
 kubectl delete -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta4/aio/deploy/recommended.yaml
 
 ---K8S REMOVE
-kubeadm reset
+kubeadm reset -f
 rm -r $HOME/.kube
 iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
 apt remove -y kubeadm kubectl kubelet
