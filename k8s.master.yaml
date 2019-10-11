@@ -23,8 +23,8 @@
         apt update
         apt install -y docker-ce docker-ce-cli containerd.io
         systemctl enable docker
-        apt install -y kubeadm kubectl kubelet=1.15.4-00
-        echo "\n10.55.0.141 k8s-master-1\n10.55.0.142 k8s-master-2\n10.55.0.143 k8s-master-3\n10.55.0.144 k8s-worker-1\n10.55.0.145 k8s-worker-2\n10.55.0.146 k8s-worker-3\n" >> /etc/hosts
+        apt install -y kubeadm kubectl kubelet
+#        echo "\n10.55.0.141 k8s-master-1\n10.55.0.142 k8s-master-2\n10.55.0.143 k8s-master-3\n10.55.0.144 k8s-worker-1\n10.55.0.145 k8s-worker-2\n10.55.0.146 k8s-worker-3\n" >> /etc/hosts
         sysctl net.bridge.bridge-nf-call-iptables=1
         echo "net.bridge.bridge-nf-call-iptables=1\n" >> /etc/sysctl.conf
         sysctl -p

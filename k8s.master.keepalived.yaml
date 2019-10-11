@@ -14,7 +14,7 @@
 
     - name: system config
       shell: |
-        echo "\nnet.ipv4.ip_forward = 1\nnet.ipv4.ip_nonlocal_bind = 1\nnet.ipv4.conf.eth1.arp_announce = 2\nnet.ipv4.conf.eth1.arp_ignore = 1\n" >> /etc/sysctl.conf
+        echo "\nnet.ipv4.ip_forward = 1\nnet.ipv4.ip_nonlocal_bind = 1\nnet.ipv4.conf.ens192.arp_announce = 2\nnet.ipv4.conf.ens192.arp_ignore = 1\n" >> /etc/sysctl.conf
         sysctl -p
         systemctl enable keepalived
-        service keepalived reload
+        service keepalived restart

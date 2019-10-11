@@ -5,4 +5,4 @@
   tasks:
     - name: run worker nodes
       shell: |
-        kubeadm join 10.55.0.140:6443 --token vu2z2d.1sylk0ct2za7ohu0 --discovery-token-ca-cert-hash sha256:6173315a83ec2a995b6cf2617ee08e0729beccbb2b484ce2d267b5bda00ae718
+        kubeadm join 10.55.0.140:6443 --token lgdygy.einlg8lb15tjjswe --discovery-token-ca-cert-hash sha256:21f700c5536e2247b038140857a07f9797bdf4bf581373068973ed02a6dbb00f
