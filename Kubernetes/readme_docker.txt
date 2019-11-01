@@ -19,6 +19,7 @@ curl -k https://user:password@docker-registry:5000/v2/_catalog
 curl -k https://user:password@docker-registry:5000/v2/time-service/tags/list
 
 scp -r certs.d/ lk@k8s-worker-1:/home/lk/
+cp certs.d/* /etc/docker/certs.d/
 
 docker image prune
 docker exec -it time-service /bin/bash

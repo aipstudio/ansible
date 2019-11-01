@@ -1,0 +1,8 @@
+kubectl get secret gitlab-admin-token-gwt84 -n kube-system -o jsonpath="{['data']['ca\.crt']}" | base64 --decode
+kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep gitlab-admin | awk '{print $1}')
+
+git config --global http.sslVerify false
+
+/etc/gitlab/ssl - *.key *.crt
+/etc/gitlab/gitlab.rb - external_url = https:// AND registry_external_url = http://*:5005
+gitlab-ctl reconfigure
