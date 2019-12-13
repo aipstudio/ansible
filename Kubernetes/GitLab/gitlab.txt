@@ -1,4 +1,5 @@
-kubectl get secret gitlab-admin-token-gwt84 -n kube-system -o jsonpath="{['data']['ca\.crt']}" | base64 --decode
+kubectl get secret -n kube-system
+kubectl get secret gitlab-admin-token-qdjlj -n kube-system -o jsonpath="{['data']['ca\.crt']}" | base64 --decode
 kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep gitlab-admin | awk '{print $1}')
 
 git config --global http.sslVerify false

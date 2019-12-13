@@ -1,0 +1,4 @@
+gitlab-runner register --non-interactive --executor 'docker' --docker-image 'alpine' --url 'https://' --registration-token '' --tls-ca-file=''
+
+
+environment = ["GIT_SSL_NO_VERIFY=true"]
