@@ -1,0 +1,21 @@
+cd C:\Windows\System32\Sysprep
+sysprep /generalize /oobe /unattend:C:\Intel\au.xml
+
+Get-AppPackage -AllUsers Microsoft.LanguageExperiencePackru*
+Remove-AppPackage -AllUsers Microsoft.LanguageExperiencePackru*
+
+reg add "HKLM\SOFTWARE\Policies\Microsoft\WindowsStore" /v "RemoveWindowsStore" /t "REG_DWORD" /d "1"
+reg add "HKLM\SOFTWARE\Policies\Microsoft\WindowsStore" /v "DisableStoreApps" /t "REG_DWORD" /d "1"
+reg add "HKLM\SOFTWARE\Policies\Microsoft\WindowsStore" /v "AutoDownload" /t "REG_DWORD" /d "1"
+
+wmic path softwarelicensingservice get OA3xOriginalProductKey
+slmgr /upk
+slmgr /rearm
+slmgr /ipk $KEY
+
+Export-StartLayout –path c:\Start.xml
+Export-StartLayout -UseDesktopApplicationID -Path c:\layout.xml
+
+HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU
+UseWUServer 0 DWORD
+restart Центр обновлений

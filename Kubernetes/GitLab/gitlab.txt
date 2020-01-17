@@ -7,3 +7,6 @@ git config --global http.sslVerify false
 /etc/gitlab/ssl - *.key *.crt
 /etc/gitlab/gitlab.rb - external_url = https:// AND registry_external_url = http://*:5005
 gitlab-ctl reconfigure
+
+/etc/docker/daemon.json
+{ "insecure-registries":["myregistry.example.com:5000"] }

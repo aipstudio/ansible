@@ -5,6 +5,24 @@ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
 apt update
 
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+cat > /etc/docker/daemon.json <<EOF
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2"
+}
+EOF
+
+mkdir -p /etc/systemd/system/docker.service.d
+systemctl daemon-reload
+systemctl restart docker
+
 apt install -y docker-ce docker-ce-cli containerd.io
 systemctl enable docker
 apt install -y kubeadm kubectl kubelet
@@ -20,7 +38,7 @@ update-alternatives --set arptables /usr/sbin/arptables-legacy
 update-alternatives --set ebtables /usr/sbin/ebtables-legacy
 
 swapoff /swap.imp
-kubeadm init --pod-network-cidr=10.244.0.0/16 --control-plane-endpoint=10.55.0.140 --apiserver-advertise-address=10.55.0.140 --service-cidr=10.245.0.0/16
+kubeadm init --pod-network-cidr=10.244.0.0/16 --control-plane-endpoint=10.55.0.140 --apiserver-advertise-address=10.55.0.140 --service-cidr=10.245.0.0/16 --upload-certs
 mkdir -p $HOME/.kube && cp -i /etc/kubernetes/admin.conf $HOME/.kube/config && chown $(id -u):$(id -g) $HOME/.kube/config
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
@@ -31,7 +49,7 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/mast
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/baremetal/service-nodeport.yaml
 
 K8S LOAD BALANCER BARE METALL ------------------------
-kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.8.1/manifests/metallb.yaml
+kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.8.3/manifests/metallb.yaml
 
 K8S PROMETHEUS + GRAFANA -----------------------------
 https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/getting-started.md
@@ -41,16 +59,19 @@ K8S DOCKER-REGISTRY ---------------------------
 kubectl create secret docker-registry docker-registry-credentials --docker-server=DOCKER_REGISTRY_SERVER --docker-username=DOCKER_USER --docker-password=DOCKER_PASSWORD --docker-email=fuck
 
 K8S MULTIMASTER-------------
-scp -r /etc/kubernetes/pki/ root@k8s-master-2:/etc/kubernetes/
+scp -r /etc/kubernetes/pki/ lk@k8s-master-2:/tmp/1
+ca.crt ca.key sa.key sa.pub front-proxy-ca.key front-proxy-ca.crt
+etcd ca.crt ca.key
 
-kubeadm join 10.55.0.140:6443 --token vyoo0b.dlr1bw86filn9b4w \
-  --discovery-token-ca-cert-hash sha256:fdd9fad71733e55ea1955275b5c3f544bc4d84a88997d55adc78fed0a63cdbc5 \
-  --control-plane
+kubeadm join 10.55.0.140:6443 --token ur9mck.98ox7ubdlteq1gem \
+    --discovery-token-ca-cert-hash sha256:d055ba37d326c4a4384a7990e54624e969440f4ca80c5baeda8935a059a40573 \
+    --control-plane
 
 Then you can join any number of worker nodes by running the following on each as root:
 
-kubeadm join 10.55.0.140:6443 --token vyoo0b.dlr1bw86filn9b4w \
-  --discovery-token-ca-cert-hash sha256:fdd9fad71733e55ea1955275b5c3f544bc4d84a88997d55adc78fed0a63cdbc5
+kubeadm join 10.55.0.140:6443 --token ur9mck.98ox7ubdlteq1gem \
+    --discovery-token-ca-cert-hash sha256:d055ba37d326c4a4384a7990e54624e969440f4ca80c5baeda8935a059a40573
+
 
 watch kubectl get all --all-namespaces -o wide
 kubectl get nodes --all-namespaces -o wide

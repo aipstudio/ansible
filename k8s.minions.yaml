@@ -1,8 +1,0 @@
----
-- hosts: k8s-minions
-  become: yes
-  become_method: su
-  tasks:
-    - name: run worker nodes
-      shell: |
-        kubeadm join 10.55.0.140:6443 --token lgdygy.einlg8lb15tjjswe --discovery-token-ca-cert-hash sha256:21f700c5536e2247b038140857a07f9797bdf4bf581373068973ed02a6dbb00f

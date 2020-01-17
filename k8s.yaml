@@ -1,0 +1,9 @@
+---
+- hosts: k8s
+  become: yes
+  become_method: su
+  tasks:
+
+    - name: run all nodes
+      shell: |
+        rm -
