@@ -8,6 +8,13 @@ apt update
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 
+apt install -y docker-ce docker-ce-cli containerd.io
+systemctl enable docker
+
+mkdir -p /etc/systemd/system/docker.service.d
+systemctl daemon-reload
+systemctl restart docker
+
 cat > /etc/docker/daemon.json <<EOF
 {
   "exec-opts": ["native.cgroupdriver=systemd"],
@@ -19,12 +26,6 @@ cat > /etc/docker/daemon.json <<EOF
 }
 EOF
 
-mkdir -p /etc/systemd/system/docker.service.d
-systemctl daemon-reload
-systemctl restart docker
-
-apt install -y docker-ce docker-ce-cli containerd.io
-systemctl enable docker
 apt install -y kubeadm kubectl kubelet
 
 DOCKER API ENABLE-----------------
@@ -32,6 +33,7 @@ DOCKER API ENABLE-----------------
 ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock -H tcp://0.0.0.0:2375
 
 K8S INIT-----------------
+apt-get install -y iptables arptables ebtables
 update-alternatives --set iptables /usr/sbin/iptables-legacy
 update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
 update-alternatives --set arptables /usr/sbin/arptables-legacy
@@ -54,6 +56,8 @@ kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.8.3/manifes
 K8S PROMETHEUS + GRAFANA -----------------------------
 https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/getting-started.md
 https://github.com/coreos/prometheus-operator
+apt -y install nfs-common
+
 
 K8S DOCKER-REGISTRY ---------------------------
 kubectl create secret docker-registry docker-registry-credentials --docker-server=DOCKER_REGISTRY_SERVER --docker-username=DOCKER_USER --docker-password=DOCKER_PASSWORD --docker-email=fuck
@@ -63,22 +67,13 @@ scp -r /etc/kubernetes/pki/ lk@k8s-master-2:/tmp/1
 ca.crt ca.key sa.key sa.pub front-proxy-ca.key front-proxy-ca.crt
 etcd ca.crt ca.key
 
-kubeadm join 10.55.0.140:6443 --token ur9mck.98ox7ubdlteq1gem \
-    --discovery-token-ca-cert-hash sha256:d055ba37d326c4a4384a7990e54624e969440f4ca80c5baeda8935a059a40573 \
-    --control-plane
-
-Then you can join any number of worker nodes by running the following on each as root:
-
-kubeadm join 10.55.0.140:6443 --token ur9mck.98ox7ubdlteq1gem \
-    --discovery-token-ca-cert-hash sha256:d055ba37d326c4a4384a7990e54624e969440f4ca80c5baeda8935a059a40573
-
-
 watch kubectl get all --all-namespaces -o wide
 kubectl get nodes --all-namespaces -o wide
 kubectl get pods --all-namespaces -o wide
 kubectl get services --all-namespaces -o wide
 kubectl edit cm coredns -n kube-system
 kubectl exec -it pod/nginx-deployment-1-5d8ffdf944-tcn4z -- /bin/bash
+kubectl delete all --all -n test-106-production
 
 K8S DASHBOARD--------------------
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta4/aio/deploy/recommended.yaml

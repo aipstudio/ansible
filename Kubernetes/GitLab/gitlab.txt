@@ -5,8 +5,14 @@ kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | gre
 git config --global http.sslVerify false
 
 /etc/gitlab/ssl - *.key *.crt
+добавить в сертификат всю цепочку сертов
 /etc/gitlab/gitlab.rb - external_url = https:// AND registry_external_url = http://*:5005
 gitlab-ctl reconfigure
 
 /etc/docker/daemon.json
 { "insecure-registries":["myregistry.example.com:5000"] }
+
+ Error: validation failed: unable to recognize "": no matches for kind "Deployment" in version "extensions/v1beta1"
+ /etc/kubernetes/manifests/kube-apiserver.yaml
+spec: -> containers: -> - command:
+--runtime-config=apps/v1beta1=true,extensions/v1beta1/deployments=true
