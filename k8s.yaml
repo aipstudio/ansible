@@ -6,5 +6,5 @@
 
     - name: run all nodes
       shell: |
+          apt update
           apt -y upgrade
-          apt -y install nfs-common
