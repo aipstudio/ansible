@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<head>
+  <Oracle>
+    <Server>10.55.0.126:1521/XE</Server>
+    <UserID>organiz</UserID>
+    <Password>a</Password>
+  </Oracle>
+</head>

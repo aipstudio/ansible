@@ -19,3 +19,8 @@ Export-StartLayout -UseDesktopApplicationID -Path c:\layout.xml
 HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU
 UseWUServer 0 DWORD
 restart Центр обновлений
+
+net start w32time
+w32tm /config /syncfromflags:manual /manualpeerlist:ru.pool.ntp.org
+w32tm /config /update
+w32tm /resync
