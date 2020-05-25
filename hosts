@@ -10,15 +10,9 @@
 10.55.0.141 ansible_user=root ansible_password=1 ansible_become_user=root ansible_become_password=1
 10.55.0.142 ansible_user=root ansible_password=1 ansible_become_user=root ansible_become_password=1
 
-[k8s-minions]
+[k8s-worker]
 10.55.0.144 ansible_user=root ansible_password=1 ansible_become_user=root ansible_become_password=1
 10.55.0.145 ansible_user=root ansible_password=1 ansible_become_user=root ansible_become_password=1
-
-[k8s]
-10.55.0.141 ansible_user=lk ansible_password=hF6aF6G5eGwR ansible_become_user=root ansible_become_password=Fb0W5nsLTPdC
-10.55.0.142 ansible_user=lk ansible_password=hF6aF6G5eGwR ansible_become_user=root ansible_become_password=Fb0W5nsLTPdC
-10.55.0.144 ansible_user=lk ansible_password=hF6aF6G5eGwR ansible_become_user=root ansible_become_password=Fb0W5nsLTPdC
-10.55.0.145 ansible_user=lk ansible_password=hF6aF6G5eGwR ansible_become_user=root ansible_become_password=Fb0W5nsLTPdC
 
 [k8s-masters:vars]
 ansible_python_interpreter=/usr/bin/python3
